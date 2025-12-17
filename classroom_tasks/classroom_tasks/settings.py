@@ -74,8 +74,12 @@ WSGI_APPLICATION = 'classroom_tasks.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dwes_practica_ut04',   # nombre de la base de datos
+        'USER': 'isard',                # usuario de PostgreSQL
+        'PASSWORD': 'pirineus',         # contraseña
+        'HOST': '127.0.0.1',            # servidor de la BD
+        'PORT': '5433',                 # puerto por defecto de PostgreSQL
     }
 }
 
