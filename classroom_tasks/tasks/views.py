@@ -16,7 +16,7 @@ def create_task(request):
             task.save()
             form.save_m2m()
             messages.success(request, 'Tarea creada correctamente.')
-            return redirect('list_my_tasks')
+            return redirect("tasks:list_my_tasks")
     else:
         form = TaskForm()
     return render(request, 'tasks/create_task.html', {'form': form})
@@ -25,8 +25,8 @@ def create_task(request):
 # Listar las tareas del usuario (creadas y en las que colabora)
 @login_required
 def list_my_tasks(request):
-    created = Task.objects.filter(creator=request.user)
-    collaborating = Task.objects.filter(members=request.user)
+    created = Task.objects.filter(creator=request.user).distinct()
+    collaborating = Task.objects.filter(members=request.user).exclude(creator=request.user).distinct()
     return render(
         request,
         'tasks/list_my_tasks.html',
@@ -52,16 +52,16 @@ def deliver_task(request, task_id):
     # Solo creador o miembros pueden entregar
     if task.creator != request.user and not task.members.filter(id=request.user.id).exists():
         messages.error(request, 'No tienes permisos para entregar esta tarea.')
-        return redirect('list_my_tasks')
+        return redirect("tasks:list_my_tasks")
 
     if task.status != 'PENDIENTE':
         messages.warning(request, 'La tarea ya está entregada o validada.')
-        return redirect('list_my_tasks')
+        return redirect("tasks:list_my_tasks")
 
     task.status = 'ENTREGADA'
     task.save()
     messages.success(request, 'Tarea entregada.')
-    return redirect('list_my_tasks')
+    return redirect("tasks:list_my_tasks")
 
 
 # Validar una tarea (profesor)
@@ -71,14 +71,21 @@ def validate_task(request, task_id):
 
     if not task.requires_teacher_validation:
         messages.error(request, 'Esta tarea no requiere validación de profesor.')
-        return redirect('tasks_to_validate')
+        return redirect("tasks:tasks_to_validate")
 
     if task.status != 'ENTREGADA':
         messages.warning(request, 'La tarea debe estar entregada para poder validarla.')
-        return redirect('tasks_to_validate')
+        return redirect("tasks:tasks_to_validate")
 
     task.status = 'VALIDADA'
     task.teacher_validator = request.user
     task.save()
     messages.success(request, 'Tarea validada.')
-    return redirect('tasks_to_validate')
+    return redirect("tasks:tasks_to_validate")
+
+# Ver detalle de una tarea
+@login_required
+def task_detail(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    return render(request, 'tasks/task_detail.html', {'task': task})
+
