@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tasks', # Registramos nuestra app
+    'tasks', # Registramos nuestras apps
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'classroom_tasks.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],  # Carpeta global de plantillas
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -107,12 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'es-es'         # Cambiado a español
+TIME_ZONE = 'Europe/Madrid'     # Ajustado a tu zona horaria
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -120,8 +118,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'classroom_tasks' / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración de login
+LOGIN_URL = '/accounts/login/'            # Redirige al login del admin si no está autenticado
+LOGIN_REDIRECT_URL = '/tasks/mine/'       # Tras login, redirige al listado de tareas
+LOGOUT_REDIRECT_URL = '/accounts/login/'  # Tras logout, redirige a la raíz
+AUTH_USER_MODEL = 'accounts.User'
