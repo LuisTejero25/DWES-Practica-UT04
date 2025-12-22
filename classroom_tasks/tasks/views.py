@@ -2,26 +2,41 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import Task
-from .forms import TaskForm, TaskDeliveryForm as DeliverTaskForm
-
+from .forms import IndividualTaskForm, GroupTaskForm, TaskDeliveryForm as DeliverTaskForm
 
 
 # Crear una nueva tarea (alumno/profesor)
 @login_required
 def create_task(request):
+    # Elegir tipo de formulario según parámetro GET
+    task_type = request.GET.get("type", "individual")
+
+    if task_type == "group":
+        FormClass = GroupTaskForm
+    else:
+        FormClass = IndividualTaskForm
+
     if request.method == 'POST':
-        form = TaskForm(request.POST)
+        form = FormClass(request.POST)
         if form.is_valid():
             task = form.save(commit=False)
             task.creator = request.user
             task.status = 'PENDIENTE'
             task.save()
-            form.save_m2m()
+
+            # Solo el formulario grupal tiene miembros
+            if task_type == "group":
+                form.save_m2m()
+
             messages.success(request, 'Tarea creada correctamente.')
             return redirect("tasks:list_my_tasks")
     else:
-        form = TaskForm()
-    return render(request, 'tasks/create_task.html', {'form': form})
+        form = FormClass()
+
+    return render(request, 'tasks/create_task.html', {
+        'form': form,
+        'task_type': task_type
+    })
 
 
 # Listar las tareas del usuario (creadas y en las que colabora)
