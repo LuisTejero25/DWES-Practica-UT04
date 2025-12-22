@@ -123,3 +123,23 @@ def task_detail(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     return render(request, 'tasks/task_detail.html', {'task': task})
 
+# Validación por parte del alumno (cuando NO requiere profesor)
+@login_required
+def validate_task_by_student(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    # Solo si NO requiere profesor
+    if task.requires_teacher_validation:
+        messages.error(request, "Esta tarea requiere validación del profesor.")
+        return redirect("tasks:task_detail", task_id=task.id)
+
+    # Solo si está pendiente
+    if task.status != "PENDIENTE":
+        messages.warning(request, "La tarea ya está entregada o validada.")
+        return redirect("tasks:task_detail", task_id=task.id)
+
+    task.status = "COMPLETADA"
+    task.save()
+
+    messages.success(request, "Has marcado la tarea como completada.")
+    return redirect("tasks:task_detail", task_id=task.id)
