@@ -67,6 +67,13 @@ class Task(models.Model):
         related_name='tasks_to_validate'
     )
 
+    # Campo para subir el PDF de la entrega
+    delivery_file = models.FileField(
+        "Archivo de entrega",
+        upload_to="deliveries/",
+        null=True,
+        blank=True
+    )
     
 
     # Representación en texto de la tarea (útil en el admin y en depuración).
