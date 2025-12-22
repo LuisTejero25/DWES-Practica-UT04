@@ -12,5 +12,8 @@ urlpatterns = [
     path('<int:task_id>/validate/', views.validate_task, name='validate_task'),
     path('<int:task_id>/', views.task_detail, name='detail'),
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('<int:task_id>/cancel/', views.cancel_delivery, name='cancel_delivery'),
+
+
 ]
 
