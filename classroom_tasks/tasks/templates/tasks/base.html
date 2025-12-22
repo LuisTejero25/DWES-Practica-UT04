@@ -8,15 +8,38 @@
 </head>
 <body>
     <nav>
+        <!-- Vista: Mis tareas (alumno) -->
         <a href="{% url 'tasks:list_my_tasks' %}">Mis tareas</a> |
+
+        <!-- Vista: Crear tarea (individual o grupal) -->
         <a href="{% url 'tasks:create_task' %}">Crear tarea</a> |
 
-        {% if user.is_authenticated %} 
-            <a href="{% url 'accounts:profile' %}">Mi perfil</a> | 
+        {% if user.is_authenticated %}
+
+            <!-- Vista: Listado de alumnado/profesorado -->
+            <a href="{% url 'accounts:list_users' %}">Usuarios</a> |
+
+            <!-- Vista: Perfil del usuario -->
+            <a href="{% url 'accounts:profile' %}">Mi perfil</a> |
+
+            <!-- Cerrar sesión -->
             <a href="{% url 'logout' %}">Salir</a>
-        {% endif %}       
+
+        {% else %}
+
+            <!-- Vista: Registro de usuarios -->
+            <a href="{% url 'accounts:register' %}">Registrarse</a> |
+
+            <!-- Vista: Login -->
+            <a href="{% url 'login' %}">Entrar</a>
+
+        {% endif %}
     </nav>
+
     <hr>
+
+    <!-- Contenido dinámico de cada vista -->
     {% block content %}{% endblock %}
+
 </body>
 </html>
