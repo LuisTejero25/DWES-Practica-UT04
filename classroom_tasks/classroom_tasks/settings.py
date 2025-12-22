@@ -16,20 +16,15 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@5)^6dr&6h&%m*avokjr)+*&q*_#(!*3bb@+701(y45$ka$!98'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+# https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+# Configuración rápida para desarrollo
+SECRET_KEY = 'django-insecure-@5)^6dr&6h&%m*avokjr)+*&q*_#(!*3bb@+701(y45$ka$!98' # Clave secreta
+DEBUG = True        # Modo debug activado
+ALLOWED_HOSTS = []  # Hosts permitidos
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,11 +32,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tasks', # Registramos nuestras apps
-    'accounts',
+    'tasks',        # Registramos nuestras apps
+    'accounts',     # App de usuarios
 ]
 
-MIDDLEWARE = [
+# Middleware del proyecto
+MIDDLEWARE = [ 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,8 +47,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'classroom_tasks.urls'
+# Archivo principal de rutas
+ROOT_URLCONF = 'classroom_tasks.urls'  
 
+# Configuración de plantillas
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -60,15 +58,15 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.request',   # Añade request al contexto
+                'django.contrib.auth.context_processors.auth',  # Añade user al contexto
                 'django.contrib.messages.context_processors.messages',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'classroom_tasks.wsgi.application'
+WSGI_APPLICATION = 'classroom_tasks.wsgi.application' # Configuración WSGI
 
 
 # Database
@@ -76,51 +74,43 @@ WSGI_APPLICATION = 'classroom_tasks.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dwes_practica_ut04',   # nombre de la base de datos
-        'USER': 'isard',                # usuario de PostgreSQL
-        'PASSWORD': 'pirineus',         # contraseña
-        'HOST': '127.0.0.1',            # servidor de la BD
-        'PORT': '5433',                 # puerto por defecto de PostgreSQL
+        'ENGINE': 'django.db.backends.postgresql',  # Motor PostgreSQL
+        'NAME': 'dwes_practica_ut04',               # nombre de la base de datos
+        'USER': 'isard',                            # usuario de PostgreSQL
+        'PASSWORD': 'pirineus',                     # contraseña
+        'HOST': '127.0.0.1',                        # servidor de la BD
+        'PORT': '5433',                             # puerto por defecto de PostgreSQL
     }
 }
 
 
-# Password validation
+# Validadores de contraseña
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},    # Similaridad   
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator' },             # Longitud mínima
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},             # Contraseñas comunes
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator' },           # Solo números  
 ]
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+# https://docs.djangoproject.com/en/5.2/topics/i18n/ 
 
 LANGUAGE_CODE = 'es-es'         # Cambiado a español
 TIME_ZONE = 'Europe/Madrid'     # Ajustado a tu zona horaria
-USE_I18N = True
-USE_TZ = True
+USE_I18N = True                 # Internacionalización
+USE_TZ = True                   # Uso de zonas horarias
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
+# Archivos estáticos (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/ 
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'classroom_tasks' / 'static']
+STATIC_URL = 'static/'  # URL de estáticos
+STATICFILES_DIRS = [BASE_DIR / 'classroom_tasks' / 'static']    # Carpeta de estáticos
 
-# Default primary key field type
+ # Tipo de clave primaria por defecto
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
