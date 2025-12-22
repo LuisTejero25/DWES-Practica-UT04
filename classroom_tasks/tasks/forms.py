@@ -15,3 +15,8 @@ class TaskForm(forms.ModelForm):
         if task_type == 'GRUPAL' and not members:
             raise forms.ValidationError("Las tareas grupales deben tener miembros asignados.")
         return cleaned_data
+
+class TaskDeliveryForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ["delivery_file"]
