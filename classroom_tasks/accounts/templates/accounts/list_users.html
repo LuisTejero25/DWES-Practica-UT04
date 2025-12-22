@@ -1,26 +1,26 @@
-{% extends "base.html" %}
+{% extends "base.html" %}  {# Usamos la plantilla base #}
 
 {% block content %}
 <h2>Listado de usuarios</h2>
 
 <table>
     <tr>
-        <th>Nombre de usuario</th>
-        <th>Email</th>
-        <th>Rol</th>
+        <th>Nombre de usuario</th>  {# Columna del username #}
+        <th>Email</th>              {# Columna del email #}
+        <th>Rol</th>                {# Columna del rol del usuario #}
     </tr>
 
+    {# Recorremos la lista de usuarios enviada desde la vista #}
     {% for u in users %}
     <tr>
-        <td>{{ u.username }}</td>
-        <td>{{ u.email }}</td>
-        <td>{{ u.role }}</td>
+        <td>{{ u.username }}</td>   {# Nombre de usuario #}
+        <td>{{ u.email }}</td>      {# Email del usuario #}
+        <td>{{ u.role }}</td>       {# Rol: alumno o profesor #}
     </tr>
     {% endfor %}
 </table>
 
 <br>
-<a href="{% url 'tasks:list_my_tasks' %}">⬅ Volver</a>
+<a href="{% url 'tasks:list_my_tasks' %}">⬅ Volver</a>  {# Enlace para volver al listado de tareas #}
 
 {% endblock %}
-
