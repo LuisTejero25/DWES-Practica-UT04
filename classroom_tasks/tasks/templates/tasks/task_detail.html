@@ -1,54 +1,62 @@
-{% extends "base.html" %}
+{% extends "base.html" %}  {# Usamos la plantilla base #}
 {% load static %}
 
 {% block title %}Detalle de tarea{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">  {# CSS #}
 
 <div class="task-detail">
-    <h2 class="task-title">{{ task.title }}</h2>
+    <h2 class="task-title">{{ task.title }}</h2>  {# Título de la tarea #}
 
     <div class="task-meta">
-        <p><strong>Tipo:</strong> {{ task.get_type_display }}</p>
-        <p><strong>Estado:</strong>
+        <p><strong>Tipo:</strong> {{ task.get_type_display }}</p>  {# Tipo legible #}
+
+        <p><strong>Estado:</strong>  {# Estado según flags #}
             {% if task.is_pending %}🟡 Pendiente{% endif %}
             {% if task.is_delivered %}🔵 Entregada{% endif %}
             {% if task.is_validated %}✅ Validada{% endif %}
         </p>
-        <p><strong>Fecha límite:</strong> {{ task.due_date|date:"d/m/Y H:i" }}</p>
-        <p><strong>Fecha de creación:</strong> {{ task.created_at|date:"d/m/Y H:i" }}</p>
+
+        <p><strong>Fecha límite:</strong> {{ task.due_date|date:"d/m/Y H:i" }}</p>  {# Fecha límite #}
+        <p><strong>Fecha de creación:</strong> {{ task.created_at|date:"d/m/Y H:i" }}</p>  {# Fecha creación #}
     </div>
 
     <div class="task-description">
         <h3>Descripción</h3>
-        <p>{{ task.description|default:"Sin descripción" }}</p>
+        <p>{{ task.description|default:"Sin descripción" }}</p>  {# Descripción o texto por defecto #}
     </div>
 
     <div class="task-people">
         <h3>Participantes</h3>
-        <p><strong>Creador:</strong> {{ task.creator.username }}</p>
-        <p><strong>Miembros:</strong>
+
+        <p><strong>Creador:</strong> {{ task.creator.username }}</p>  {# Usuario creador #}
+
+        <p><strong>Miembros:</strong>  {# Miembros del grupo #}
             {% for m in task.members.all %}
                 {{ m.username }}{% if not forloop.last %}, {% endif %}
             {% empty %}Sin miembros{% endfor %}
         </p>
+
         {% if task.teacher_validator %}
-            <p><strong>Validada por:</strong> {{ task.teacher_validator.username }}</p>
+            <p><strong>Validada por:</strong> {{ task.teacher_validator.username }}</p>  {# Profesor validador #}
         {% endif %}
     </div>
 
     <div class="task-actions">
         {% if task.status == "PENDIENTE" %}
-            <a href="{% url 'tasks:deliver_task' task.id %}" class="btn">📤 Entregar tarea</a>
+            <a href="{% url 'tasks:deliver_task' task.id %}" class="btn">📤 Entregar tarea</a>  {# Entregar #}
         {% endif %}
+
         {% if task.status == "ENTREGADA" %}
-            <a href="{% url 'tasks:cancel_delivery' task.id %}" class="btn btn-warning">❌ Cancelar entrega</a>
+            <a href="{% url 'tasks:cancel_delivery' task.id %}" class="btn btn-warning">❌ Cancelar entrega</a>  {# Cancelar entrega #}
         {% endif %}
+
         {% if user.is_profesor and task.requires_teacher_validation and task.is_delivered %}
-            <a href="{% url 'tasks:validate_task' task.id %}" class="btn">✔ Validar</a>
+            <a href="{% url 'tasks:validate_task' task.id %}" class="btn">✔ Validar</a>  {# Validar como profesor #}
         {% endif %}
-        <a href="{% url 'tasks:list_my_tasks' %}" class="btn btn-secondary">⬅ Volver</a>
+
+        <a href="{% url 'tasks:list_my_tasks' %}" class="btn btn-secondary">⬅ Volver</a>  {# Volver al listado #}
     </div>
 </div>
 {% endblock %}
