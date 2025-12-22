@@ -39,8 +39,11 @@
     </div>
 
     <div class="task-actions">
-        {% if user.is_alumno and task.is_pending %}
-            <a href="{% url 'tasks:deliver_task' task.id %}" class="btn">📤 Entregar</a>
+        {% if task.status == "PENDIENTE" %}
+            <a href="{% url 'tasks:deliver_task' task.id %}" class="btn">📤 Entregar tarea</a>
+        {% endif %}
+        {% if task.status == "ENTREGADA" %}
+            <a href="{% url 'tasks:cancel_delivery' task.id %}" class="btn btn-warning">❌ Cancelar entrega</a>
         {% endif %}
         {% if user.is_profesor and task.requires_teacher_validation and task.is_delivered %}
             <a href="{% url 'tasks:validate_task' task.id %}" class="btn">✔ Validar</a>
