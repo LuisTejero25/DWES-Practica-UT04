@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Mi perfil</h2>
+
+<table>
+    <tr>
+        <th>Nombre de usuario</th>
+        <td>{{ user.username }}</td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>{{ user.email }}</td>
+    </tr>
+    <tr>
+        <th>Rol</th>
+        <td>{{ user.role }}</td>
+    </tr>
+    <tr>
+        <th>Fecha de registro</th>
+        <td>{{ user.date_joined }}</td>
+    </tr>
+</table>
+
+<br>
+<a href="{% url 'tasks:task_list' %}">⬅ Volver</a>
+
+{% endblock %}
