@@ -1,28 +1,28 @@
-{% extends "base.html" %}
+{% extends "base.html" %}  {# Usamos la plantilla base #}
 
 {% block content %}
 <h2>Mi perfil</h2>
 
 <table>
     <tr>
-        <th>Nombre de usuario</th>
+        <th>Nombre de usuario</th>  {# Username del usuario #}
         <td>{{ user.username }}</td>
     </tr>
     <tr>
-        <th>Email</th>
+        <th>Email</th>  {# Email del usuario #}
         <td>{{ user.email }}</td>
     </tr>
     <tr>
-        <th>Rol</th>
+        <th>Rol</th>  {# Rol: ALUMNO o PROFESOR #}
         <td>{{ user.role }}</td>
     </tr>
     <tr>
-        <th>Fecha de registro</th>
+        <th>Fecha de registro</th>  {# Fecha en que se creó la cuenta #}
         <td>{{ user.date_joined }}</td>
     </tr>
 </table>
 
 <br>
-<a href="{% url 'tasks:task_list' %}">⬅ Volver</a>
+<a href="{% url 'tasks:task_list' %}">⬅ Volver</a>  {# Enlace para volver atrás #}
 
 {% endblock %}
