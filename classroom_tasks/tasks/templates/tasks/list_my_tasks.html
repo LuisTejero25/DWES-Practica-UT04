@@ -7,54 +7,89 @@
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
 <div class="tasks-container">
+
+    <!--  SECCIÓN 1: TAREAS CREADAS POR EL USUARIO                 -->
+    <!--  Aquí se muestran las tareas donde el usuario es creador  -->
     <h2 class="section-title">📘 Tareas creadas por mí</h2>
+
     <table class="task-table">
         <thead>
             <tr>
                 <th>Título</th>
-                <th>Tipo</th>
-                <th>Estado</th>
+                <th>Tipo</th> <!-- Muestra si es INDIVIDUAL o GRUPAL -->
+                <th>Estado</th> <!-- Pendiente / Entregada / Validada -->
                 <th>Fecha límite</th>
                 <th>Acciones</th>
             </tr>
         </thead>
+
         <tbody>
             {% for task in created %}
             <tr>
+                <!-- Título de la tarea -->
                 <td>{{ task.title }}</td>
+
+                <!-- Tipo de tarea usando get_type_display (muestra el verbose_name) -->
                 <td>{{ task.get_type_display }}</td>
+
+                <!-- Estado representado con iconos -->
                 <td>
                     {% if task.is_pending %}🟡 Pendiente{% endif %}
                     {% if task.is_delivered %}🔵 Entregada{% endif %}
                     {% if task.is_validated %}✅ Validada{% endif %}
                 </td>
+
+                <!-- Fecha límite formateada -->
                 <td>{{ task.due_date|date:"d/m/Y H:i" }}</td>
+
+                <!-- Botón para ver detalles -->
                 <td>
                     <a href="{% url 'tasks:detail' task.id %}" class="btn">Ver</a>
                 </td>
             </tr>
+
             {% empty %}
+            <!-- Si no hay tareas creadas -->
             <tr><td colspan="5">No has creado ninguna tarea.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 
+
+
+   
+    <!-- SECCIÓN 2: TAREAS EN LAS QUE EL USUARIO COLABORA -->        
+    <!-- Aquí se muestran tareas GRUPALES donde el usuario es miembro -->
+    
     <h2 class="section-title">👥 Tareas en las que colaboro</h2>
+
     <table class="task-table">
         <thead>
             <tr>
                 <th>Título</th>
+                <th>Tipo</th> 
                 <th>Descripción</th>
                 <th>Estado</th>
                 <th>Miembros</th>
             </tr>
         </thead>
+
         <tbody>
             {% for task in collaborating %}
             <tr>
+                <!-- Título -->
                 <td>{{ task.title }}</td>
-                <td>{{ task.description|truncatewords:10 }}</td>
+
+                <!-- Tipo de tarea (INDIVIDUAL / GRUPAL) -->
+                <td>{{ task.get_type_display }}</td>
+
+                <!-- Descripción -->
+                <td>{{ task.description }}</td>
+
+                <!-- Estado usando verbose_name -->
                 <td>{{ task.get_status_display }}</td>
+
+                <!-- Listado de miembros del grupo -->
                 <td>
                     {% for member in task.members.all %}
                         {{ member.username }}{% if not forloop.last %}, {% endif %}
@@ -63,10 +98,13 @@
                     {% endfor %}
                 </td>
             </tr>
+
             {% empty %}
-            <tr><td colspan="4">No colaboras en ninguna tarea.</td></tr>
+            <!-- Si no colabora en ninguna tarea -->
+            <tr><td colspan="5">No colaboras en ninguna tarea.</td></tr>
             {% endfor %}
         </tbody>
     </table>
+
 </div>
 {% endblock %}
