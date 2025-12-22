@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Entregar tarea: {{ task.title }}</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">📤 Entregar</button>
+</form>
+
+<p><a href="{% url 'tasks:list_my_tasks' %}">Volver a mis tareas</a></p>
+{% endblock %}
