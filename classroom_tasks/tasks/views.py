@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import TaskForm
 from .models import Task
+from .forms import TaskForm, TaskDeliveryForm as DeliverTaskForm
+
+
 
 # Crear una nueva tarea (alumno/profesor)
 @login_required
@@ -54,13 +56,45 @@ def deliver_task(request, task_id):
         messages.error(request, 'No tienes permisos para entregar esta tarea.')
         return redirect("tasks:list_my_tasks")
 
+    # Solo se puede entregar si está pendiente
     if task.status != 'PENDIENTE':
         messages.warning(request, 'La tarea ya está entregada o validada.')
         return redirect("tasks:list_my_tasks")
 
-    task.status = 'ENTREGADA'
+    if request.method == "POST":
+        form = DeliverTaskForm(request.POST, request.FILES, instance=task)
+        if form.is_valid():
+            task.status = "ENTREGADA"
+            task.save()
+            messages.success(request, "Tarea entregada con PDF adjunto.")
+            return redirect("tasks:list_my_tasks")
+    else:
+        form = DeliverTaskForm(instance=task)
+
+    return render(request, "tasks/deliver_task.html", {"form": form, "task": task})
+
+
+# Cancelar entrega
+@login_required
+def cancel_delivery(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    # Solo creador o miembros pueden cancelar
+    if task.creator != request.user and not task.members.filter(id=request.user.id).exists():
+        messages.error(request, "No tienes permisos para cancelar esta entrega.")
+        return redirect("tasks:list_my_tasks")
+
+    # Solo se puede cancelar si está entregada
+    if task.status != "ENTREGADA":
+        messages.warning(request, "La tarea no está en estado entregada.")
+        return redirect("tasks:list_my_tasks")
+
+    # Revertir estado y opcionalmente eliminar archivo
+    task.status = "PENDIENTE"
+    task.delivery_file.delete(save=False)  # elimina el PDF si quieres
     task.save()
-    messages.success(request, 'Tarea entregada.')
+
+    messages.success(request, "Entrega cancelada. La tarea vuelve a estado pendiente.")
     return redirect("tasks:list_my_tasks")
 
 
