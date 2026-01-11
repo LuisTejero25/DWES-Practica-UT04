@@ -8,16 +8,16 @@
 
 <div class="task-detail">
 
-    <h2 class="task-title">📤 Entregar tarea: {{ task.title }}</h2>  {# Título de la tarea #}
+    <h2 class="task-title"> Entregar tarea: {{ task.title }}</h2>  {# Título de la tarea #}
 
     <div class="task-meta">
         <p><strong>Tipo:</strong> {{ task.get_type_display }}</p>  {# Individual / Grupal #}
 
         <p><strong>Estado actual:</strong>
-            {% if task.status == "PENDIENTE" %}🟡 Pendiente{% endif %}
-            {% if task.status == "ENTREGADA" %}🔵 Entregada{% endif %}
-            {% if task.status == "VALIDADA" %}🟢 Validada{% endif %}
-            {% if task.status == "COMPLETADA" %}🟢 Completada{% endif %}
+            {% if task.status == "PENDIENTE" %} Pendiente{% endif %}
+            {% if task.status == "ENTREGADA" %} Entregada{% endif %}
+            {% if task.status == "VALIDADA" %} Validada{% endif %}
+            {% if task.status == "COMPLETADA" %} Completada{% endif %}
         </p>
 
         <p><strong>Fecha límite:</strong> {{ task.due_date|date:"d/m/Y H:i" }}</p>
@@ -39,7 +39,7 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}  {# Campo para subir PDF #}
-        <button type="submit" class="btn btn-primary">📤 Entregar</button>
+        <button type="submit" class="btn btn-primary"> Entregar</button>
     </form>
 
     <br>
