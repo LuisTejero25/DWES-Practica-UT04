@@ -8,13 +8,13 @@
 
 <div class="tasks-container">
 
-    <h2 class="section-title">🧑‍🏫 Registrar nuevo usuario</h2>
+    <h2 class="section-title"> Registrar nuevo usuario</h2>
 
     <form method="post">  {# Formulario de registro #}
         {% csrf_token %}  {# Token de seguridad #}
         {{ form.as_p }}   {# Renderizamos el formulario #}
 
-        <button type="submit" class="btn btn-success">➕ Crear usuario</button>  {# Botón de envío #}
+        <button type="submit" class="btn btn-success"> Crear usuario</button>  {# Botón de envío #}
     </form>
 
     <br>

@@ -5,14 +5,14 @@
 {% block content %}
 <div class="tasks-container">  {# Contenedor con estilo consistente con el resto del proyecto #}
 
-    <h2 class="section-title">📋 Listado de usuarios</h2>  {# Título con estilo #}
+    <h2 class="section-title"> Listado de usuarios</h2>  {# Título con estilo #}
 
     {% if user.role == "teacher" or user.is_superuser %}  
         {# Solo profesor o admin pueden registrar usuarios #}
 
         <div style="text-align: right; margin-bottom: 15px;">
             <a href="{% url 'accounts:register' %}" class="btn btn-success">
-                ➕ Registrar usuario
+                 Registrar usuario
             </a>  {# Botón de alta #}
         </div>
 
@@ -21,9 +21,9 @@
     <table class="task-table">  {# Tabla con estilos ya definidos en styles.css #}
         <thead>
             <tr>
-                <th>👤 Nombre de usuario</th>  {# Columna del username #}
-                <th>📧 Email</th>              {# Columna del email #}
-                <th>🎓 Rol</th>                {# Columna del rol del usuario #}
+                <th> Nombre de usuario</th>  {# Columna del username #}
+                <th> Email</th>              {# Columna del email #}
+                <th> Rol</th>                {# Columna del rol del usuario #}
             </tr>
         </thead>
 
@@ -36,9 +36,9 @@
                 <td>
                     {# Rol: alumno o profesor, mostrado con iconos #}
                     {% if u.role == "teacher" %}
-                        👨‍🏫 Profesor
+                         Profesor
                     {% else %}
-                        👨‍🎓 Alumno
+                         Alumno
                     {% endif %}
                 </td>
             </tr>
