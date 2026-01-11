@@ -1,4 +1,4 @@
-{% extends "base.html" %}  {# Usamos la plantilla base #}
+{% extends "tasks/base.html" %}  {# Usamos la plantilla base #}
 
 {% block title %}Tareas a validar{% endblock %}
 
@@ -6,13 +6,17 @@
 <div class="tasks-container">
     <h2 class="section-title">📋 Tareas pendientes de validación</h2>
 
+    <a href="{% url 'tasks:list_my_tasks' %}" class="btn btn-secondary">⬅ Volver a mis tareas</a>  {# Botón para volver #}
+    <br><br>
+
     <table class="task-table">
         <thead>
             <tr>
-                <th>Título</th>        {# Columna del título #}
-                <th>Descripción</th>   {# Descripción truncada #}
-                <th>Estado</th>        {# Estado de la tarea #}
-                <th>Acciones</th>      {# Botones de acción #}
+                <th>Título</th>              {# Columna del título #}
+                <th>Descripción</th>         {# Descripción truncada #}
+                <th>Alumno</th>              {# Quién entregó la tarea #}
+                <th>Fecha entrega</th>       {# Fecha de entrega #}
+                <th>Acciones</th>            {# Botones de acción #}
             </tr>
         </thead>
 
@@ -21,7 +25,22 @@
             <tr>
                 <td>{{ task.title }}</td>  {# Título #}
                 <td>{{ task.description|truncatewords:10 }}</td>  {# Descripción corta #}
-                <td>{{ task.get_status_display }}</td>  {# Estado legible #}
+
+                <td>
+                    {% if task.creator %}
+                        {{ task.creator.username }}  {# Alumno creador #}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if task.delivery_date %}
+                        {{ task.delivery_date|date:"d/m/Y H:i" }}  {# Fecha entrega #}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
 
                 <td>
                     <a href="{% url 'tasks:detail' task.id %}" class="btn">Ver</a>  {# Ver detalle #}
@@ -30,7 +49,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4">No hay tareas pendientes de validación.</td>  {# Mensaje si no hay tareas #}
+                <td colspan="5">No hay tareas pendientes de validación.</td>  {# Mensaje si no hay tareas #}
             </tr>
             {% endfor %}
         </tbody>

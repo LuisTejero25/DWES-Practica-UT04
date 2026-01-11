@@ -1,32 +1,30 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from .models import Task
 from .forms import IndividualTaskForm, GroupTaskForm, TaskDeliveryForm as DeliverTaskForm
 
 
-# Crear una nueva tarea (alumno/profesor)
+# Crear una nueva tarea (alumno o profesor)
 @login_required
 def create_task(request):
-    # Elegir tipo de formulario según parámetro GET
+    # Elegimos el formulario según el parámetro GET
     task_type = request.GET.get("type", "individual")
 
-    if task_type == "group":
-        FormClass = GroupTaskForm
-    else:
-        FormClass = IndividualTaskForm
+    FormClass = GroupTaskForm if task_type == "group" else IndividualTaskForm
 
     if request.method == 'POST':
         form = FormClass(request.POST)
         if form.is_valid():
             task = form.save(commit=False)
-            task.creator = request.user
-            task.status = 'PENDIENTE'
+            task.type = task_type.upper()          # tipo de tarea 
+            task.creator = request.user            # Usuario que crea la tarea
+            task.status = 'PENDIENTE'              # Estado inicial
             task.save()
 
-            # Solo el formulario grupal tiene miembros
             if task_type == "group":
-                form.save_m2m()
+                form.save_m2m()                    # Guardar miembros
 
             messages.success(request, 'Tarea creada correctamente.')
             return redirect("tasks:list_my_tasks")
@@ -39,25 +37,31 @@ def create_task(request):
     })
 
 
-# Listar las tareas del usuario (creadas y en las que colabora)
+# Listar tareas del usuario (creadas y colaboradas)
 @login_required
 def list_my_tasks(request):
     created = Task.objects.filter(creator=request.user).distinct()
     collaborating = Task.objects.filter(members=request.user).exclude(creator=request.user).distinct()
-    return render(
-        request,
-        'tasks/list_my_tasks.html',
-        {'created': created, 'collaborating': collaborating}
-    )
+
+    return render(request, 'tasks/list_my_tasks.html', {
+        'created': created,
+        'collaborating': collaborating
+    })
 
 
 # Listar tareas que requieren validación del profesor
 @login_required
 def tasks_to_validate(request):
+    # Solo profesores o admin pueden acceder
+    if request.user.role != "teacher" and not request.user.is_superuser:
+        messages.error(request, "No tienes permisos para validar tareas.")
+        return redirect("tasks:list_my_tasks")
+
     tasks = Task.objects.filter(
         requires_teacher_validation=True,
         status='ENTREGADA'
     )
+
     return render(request, 'tasks/tasks_to_validate.html', {'tasks': tasks})
 
 
@@ -73,15 +77,16 @@ def deliver_task(request, task_id):
 
     # Solo se puede entregar si está pendiente
     if task.status != 'PENDIENTE':
-        messages.warning(request, 'La tarea ya está entregada o validada.')
+        messages.warning(request, 'La tarea no está en estado pendiente.')
         return redirect("tasks:list_my_tasks")
 
     if request.method == "POST":
         form = DeliverTaskForm(request.POST, request.FILES, instance=task)
         if form.is_valid():
-            task.status = "ENTREGADA"
+            task.status = "ENTREGADA"                  # Cambiar estado
+            task.delivery_date = timezone.now()        # Guardar fecha de entrega
             task.save()
-            messages.success(request, "Tarea entregada con PDF adjunto.")
+            messages.success(request, "Tarea entregada correctamente.")
             return redirect("tasks:list_my_tasks")
     else:
         form = DeliverTaskForm(instance=task)
@@ -89,7 +94,7 @@ def deliver_task(request, task_id):
     return render(request, "tasks/deliver_task.html", {"form": form, "task": task})
 
 
-# Cancelar entrega
+# Cancelar entrega (alumno)
 @login_required
 def cancel_delivery(request, task_id):
     task = get_object_or_404(Task, id=task_id)
@@ -104,12 +109,13 @@ def cancel_delivery(request, task_id):
         messages.warning(request, "La tarea no está en estado entregada.")
         return redirect("tasks:list_my_tasks")
 
-    # Revertir estado y opcionalmente eliminar archivo
+    # Revertir estado y eliminar archivo
     task.status = "PENDIENTE"
-    task.delivery_file.delete(save=False)  # elimina el PDF si quieres
+    task.delivery_file.delete(save=False)
+    task.delivery_date = None
     task.save()
 
-    messages.success(request, "Entrega cancelada. La tarea vuelve a estado pendiente.")
+    messages.success(request, "Entrega cancelada correctamente.")
     return redirect("tasks:list_my_tasks")
 
 
@@ -118,25 +124,33 @@ def cancel_delivery(request, task_id):
 def validate_task(request, task_id):
     task = get_object_or_404(Task, id=task_id)
 
+    # Solo profesores o admin pueden validar
+    if request.user.role != "teacher" and not request.user.is_superuser:
+        messages.error(request, "No tienes permisos para validar tareas.")
+        return redirect("tasks:list_my_tasks")
+
     if not task.requires_teacher_validation:
-        messages.error(request, 'Esta tarea no requiere validación de profesor.')
+        messages.error(request, 'Esta tarea no requiere validación del profesor.')
         return redirect("tasks:tasks_to_validate")
 
     if task.status != 'ENTREGADA':
-        messages.warning(request, 'La tarea debe estar entregada para poder validarla.')
+        messages.warning(request, 'La tarea debe estar entregada para validarla.')
         return redirect("tasks:tasks_to_validate")
 
     task.status = 'VALIDADA'
     task.teacher_validator = request.user
     task.save()
-    messages.success(request, 'Tarea validada.')
+
+    messages.success(request, 'Tarea validada correctamente.')
     return redirect("tasks:tasks_to_validate")
+
 
 # Ver detalle de una tarea
 @login_required
 def task_detail(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     return render(request, 'tasks/task_detail.html', {'task': task})
+
 
 # Validación por parte del alumno (cuando NO requiere profesor)
 @login_required
@@ -146,15 +160,16 @@ def validate_task_by_student(request, task_id):
     # Solo si NO requiere profesor
     if task.requires_teacher_validation:
         messages.error(request, "Esta tarea requiere validación del profesor.")
-        return redirect("tasks:task_detail", task_id=task.id)
+        return redirect("tasks:detail", task_id=task.id)
 
     # Solo si está pendiente
     if task.status != "PENDIENTE":
-        messages.warning(request, "La tarea ya está entregada o validada.")
-        return redirect("tasks:task_detail", task_id=task.id)
+        messages.warning(request, "La tarea ya no está pendiente.")
+        return redirect("tasks:detail", task_id=task.id)
 
     task.status = "COMPLETADA"
     task.save()
 
     messages.success(request, "Has marcado la tarea como completada.")
-    return redirect("tasks:task_detail", task_id=task.id)
+    return redirect("tasks:detail", task_id=task.id)
+

@@ -1,0 +1,36 @@
+{% extends "tasks/base.html" %}
+{% load static %}
+
+{% block title %}Cancelar entrega{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div class="tasks-container">
+
+    <h2 class="section-title">❌ Cancelar entrega</h2>
+
+    <p>Estás a punto de cancelar la entrega de la tarea:</p>
+
+    <h3>{{ task.title }}</h3>  {# Título de la tarea #}
+
+    <p><strong>Estado actual:</strong>
+        {% if task.status == "ENTREGADA" %}🔵 Entregada{% endif %}
+        {% if task.status == "PENDIENTE" %}🟡 Pendiente{% endif %}
+        {% if task.status == "VALIDADA" %}🟢 Validada{% endif %}
+        {% if task.status == "COMPLETADA" %}🟢 Completada{% endif %}
+    </p>
+
+    <p>¿Seguro que deseas cancelar la entrega? Podrás volver a entregarla más tarde mientras esté dentro del plazo.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">❌ Confirmar cancelación</button>
+    </form>
+
+    <br>
+
+    <a href="{% url 'tasks:detail' task.id %}" class="btn btn-secondary">⬅ Volver sin cancelar</a>
+
+</div>
+{% endblock %}

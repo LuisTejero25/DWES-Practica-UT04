@@ -1,62 +1,102 @@
-{% extends "base.html" %}  {# Usamos la plantilla base #}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Detalle de tarea{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">  {# CSS #}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
 <div class="task-detail">
-    <h2 class="task-title">{{ task.title }}</h2>  {# Título de la tarea #}
+
+    {# Título #}
+    <h2 class="task-title">{{ task.title }}</h2>
 
     <div class="task-meta">
-        <p><strong>Tipo:</strong> {{ task.get_type_display }}</p>  {# Tipo legible #}
 
-        <p><strong>Estado:</strong>  {# Estado según flags #}
-            {% if task.is_pending %}🟡 Pendiente{% endif %}
-            {% if task.is_delivered %}🔵 Entregada{% endif %}
-            {% if task.is_validated %}✅ Validada{% endif %}
+        {# Tipo de tarea #}
+        <p><strong>Tipo:</strong> {{ task.get_type_display }}</p>
+
+        {# Info extra si es evaluable #}
+        {% if task.type == "EVALUABLE" %}
+            <p><strong>Requiere validación:</strong>
+                {% if task.requires_teacher_validation %}Sí{% else %}No{% endif %}
+            </p>
+
+            <p><strong>Profesor validador:</strong>
+                {% if task.teacher_validator %}
+                    {{ task.teacher_validator.username }}
+                {% else %}
+                    No asignado
+                {% endif %}
+            </p>
+        {% endif %}
+
+        {# Estado #}
+        <p><strong>Estado:</strong>
+            {% if task.status == "PENDIENTE" %}Pendiente{% endif %}
+            {% if task.status == "ENTREGADA" %}Entregada{% endif %}
+            {% if task.status == "VALIDADA" %}Validada{% endif %}
+            {% if task.status == "COMPLETADA" %}Completada{% endif %}
         </p>
 
-        <p><strong>Fecha límite:</strong> {{ task.due_date|date:"d/m/Y H:i" }}</p>  {# Fecha límite #}
-        <p><strong>Fecha de creación:</strong> {{ task.created_at|date:"d/m/Y H:i" }}</p>  {# Fecha creación #}
+        {# Fechas #}
+        <p><strong>Fecha límite:</strong> {{ task.due_date|date:"d/m/Y H:i" }}</p>
+        <p><strong>Creada:</strong> {{ task.created_at|date:"d/m/Y H:i" }}</p>
     </div>
 
+    {# Descripción #}
     <div class="task-description">
         <h3>Descripción</h3>
-        <p>{{ task.description|default:"Sin descripción" }}</p>  {# Descripción o texto por defecto #}
+        <p>{{ task.description|default:"Sin descripción" }}</p>
     </div>
 
+    {# Participantes #}
     <div class="task-people">
         <h3>Participantes</h3>
 
-        <p><strong>Creador:</strong> {{ task.creator.username }}</p>  {# Usuario creador #}
+        <p><strong>Creador:</strong> {{ task.creator.username }}</p>
 
-        <p><strong>Miembros:</strong>  {# Miembros del grupo #}
+        <p><strong>Miembros:</strong>
             {% for m in task.members.all %}
                 {{ m.username }}{% if not forloop.last %}, {% endif %}
             {% empty %}Sin miembros{% endfor %}
         </p>
 
         {% if task.teacher_validator %}
-            <p><strong>Validada por:</strong> {{ task.teacher_validator.username }}</p>  {# Profesor validador #}
+            <p><strong>Validada por:</strong> {{ task.teacher_validator.username }}</p>
         {% endif %}
     </div>
 
+    {# Acciones según usuario y estado #}
     <div class="task-actions">
-        {% if task.status == "PENDIENTE" %}
-            <a href="{% url 'tasks:deliver_task' task.id %}" class="btn">📤 Entregar tarea</a>  {# Entregar #}
+
+        {# Acciones para alumnos #}
+        {% if user == task.creator or user in task.members.all %}
+
+            {% if task.status == "PENDIENTE" %}
+                <a href="{% url 'tasks:deliver_task' task.id %}" class="btn">Entregar tarea</a>
+            {% endif %}
+
+            {% if task.status == "ENTREGADA" %}
+                <a href="{% url 'tasks:cancel_delivery' task.id %}" class="btn btn-warning">Cancelar entrega</a>
+            {% endif %}
+
+            {% if not task.requires_teacher_validation and task.status == "PENDIENTE" %}
+                <a href="{% url 'tasks:validate_by_student' task.id %}" class="btn btn-success">Marcar como completada</a>
+            {% endif %}
+
         {% endif %}
 
-        {% if task.status == "ENTREGADA" %}
-            <a href="{% url 'tasks:cancel_delivery' task.id %}" class="btn btn-warning">❌ Cancelar entrega</a>  {# Cancelar entrega #}
+        {# Acciones para profesor #}
+        {% if user.role == "teacher" or user.is_superuser %}
+            {% if task.requires_teacher_validation and task.status == "ENTREGADA" %}
+                <a href="{% url 'tasks:validate_task' task.id %}" class="btn btn-success">Validar tarea</a>
+            {% endif %}
         {% endif %}
 
-        {% if user.is_profesor and task.requires_teacher_validation and task.is_delivered %}
-            <a href="{% url 'tasks:validate_task' task.id %}" class="btn">✔ Validar</a>  {# Validar como profesor #}
-        {% endif %}
-
-        <a href="{% url 'tasks:list_my_tasks' %}" class="btn btn-secondary">⬅ Volver</a>  {# Volver al listado #}
+        {# Volver #}
+        <a href="{% url 'tasks:list_my_tasks' %}" class="btn btn-secondary">⬅ Volver</a>
     </div>
+
 </div>
 {% endblock %}

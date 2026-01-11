@@ -1,26 +1,64 @@
-{% extends "base.html" %}  {# Usamos la plantilla base #}
+{% extends "tasks/base.html" %}  {# Usamos la plantilla base #}
+
+{% block title %}Listado de usuarios{% endblock %}
 
 {% block content %}
-<h2>Listado de usuarios</h2>
+<div class="tasks-container">  {# Contenedor con estilo consistente con el resto del proyecto #}
 
-<table>
-    <tr>
-        <th>Nombre de usuario</th>  {# Columna del username #}
-        <th>Email</th>              {# Columna del email #}
-        <th>Rol</th>                {# Columna del rol del usuario #}
-    </tr>
+    <h2 class="section-title">📋 Listado de usuarios</h2>  {# Título con estilo #}
 
-    {# Recorremos la lista de usuarios enviada desde la vista #}
-    {% for u in users %}
-    <tr>
-        <td>{{ u.username }}</td>   {# Nombre de usuario #}
-        <td>{{ u.email }}</td>      {# Email del usuario #}
-        <td>{{ u.role }}</td>       {# Rol: alumno o profesor #}
-    </tr>
-    {% endfor %}
-</table>
+    {% if user.role == "teacher" or user.is_superuser %}  
+        {# Solo profesor o admin pueden registrar usuarios #}
 
-<br>
-<a href="{% url 'tasks:list_my_tasks' %}">⬅ Volver</a>  {# Enlace para volver al listado de tareas #}
+        <div style="text-align: right; margin-bottom: 15px;">
+            <a href="{% url 'accounts:register' %}" class="btn btn-success">
+                ➕ Registrar usuario
+            </a>  {# Botón de alta #}
+        </div>
 
+    {% endif %}
+
+    <table class="task-table">  {# Tabla con estilos ya definidos en styles.css #}
+        <thead>
+            <tr>
+                <th>👤 Nombre de usuario</th>  {# Columna del username #}
+                <th>📧 Email</th>              {# Columna del email #}
+                <th>🎓 Rol</th>                {# Columna del rol del usuario #}
+            </tr>
+        </thead>
+
+        <tbody>
+            {# Recorremos la lista de usuarios enviada desde la vista #}
+            {% for u in users %}
+            <tr>
+                <td>{{ u.username }}</td>   {# Nombre de usuario #}
+                <td>{{ u.email }}</td>      {# Email del usuario #}
+                <td>
+                    {# Rol: alumno o profesor, mostrado con iconos #}
+                    {% if u.role == "teacher" %}
+                        👨‍🏫 Profesor
+                    {% else %}
+                        👨‍🎓 Alumno
+                    {% endif %}
+                </td>
+            </tr>
+
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align:center; padding:15px;">
+                    No hay usuarios registrados.  {# Mensaje si no hay usuarios #}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 20px;">
+        <a href="{% url 'tasks:list_my_tasks' %}" class="btn btn-secondary">
+            ⬅ Volver
+        </a>  {# Enlace para volver al listado de tareas #}
+    </div>
+
+</div>
 {% endblock %}
+

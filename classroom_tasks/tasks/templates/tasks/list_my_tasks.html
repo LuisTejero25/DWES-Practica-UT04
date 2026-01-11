@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "tasks/base.html" %}
 {% load static %}
 
 {% block title %}Mis tareas{% endblock %}
@@ -7,6 +7,14 @@
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
 <div class="tasks-container">
+
+    <a href="{% url 'tasks:create_task' %}" class="btn btn-success">➕ Crear tarea</a>  {# Todos pueden crear tareas #}
+    <br><br>
+
+    {% if user.role == "teacher" or user.is_superuser %}  {# Solo profesor o admin #}
+        <a href="{% url 'tasks:tasks_to_validate' %}" class="btn btn-primary">📝 Tareas a validar</a>  {# Validación de tareas #}
+        <br><br>
+    {% endif %}
 
     <!--  SECCIÓN 1: TAREAS CREADAS POR EL USUARIO                 -->
     <!--  Aquí se muestran las tareas donde el usuario es creador  -->
@@ -57,7 +65,6 @@
 
 
 
-   
     <!-- SECCIÓN 2: TAREAS EN LAS QUE EL USUARIO COLABORA -->        
     <!-- Aquí se muestran tareas GRUPALES donde el usuario es miembro -->
     

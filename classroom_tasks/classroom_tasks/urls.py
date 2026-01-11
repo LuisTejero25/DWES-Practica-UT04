@@ -16,10 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('tasks/', include('tasks.urls')),  # Conectamos la app tasks
-    path('accounts/', include('django.contrib.auth.urls')),  # Login, logout y demás
+    path('admin/', admin.site.urls),                       # Panel de administración
+
+    path('tasks/', include('tasks.urls')),                 # Rutas de la app de tareas
+ 
+    # Logout que acepta GET y redirige al login 
+    path( "accounts/logout/", auth_views.LogoutView.as_view(next_page="/accounts/login/"),
+    name="logout" ),
+    
+    path('accounts/', include('django.contrib.auth.urls')),# Login, logout, password reset...
+    path('accounts/', include('accounts.urls')),           # Rutas personalizadas de usuarios
+   
 ]
 

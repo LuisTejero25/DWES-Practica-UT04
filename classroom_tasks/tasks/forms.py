@@ -12,6 +12,11 @@ class IndividualTaskForm(forms.ModelForm):  # Formulario para tareas individuale
             "requires_teacher_validation", # Si necesita validación del profesor
             "due_date",                    # Fecha límite
         ]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control"}),
+            "due_date": forms.DateTimeInput(attrs={"type": "datetime-local", "class": "form-control"}),
+        }
 
     def save(self, commit=True):  # Guardado personalizado
         task = super().save(commit=False)
@@ -23,10 +28,10 @@ class IndividualTaskForm(forms.ModelForm):  # Formulario para tareas individuale
 
 class GroupTaskForm(forms.ModelForm):  # Formulario para tareas grupales
     members = forms.ModelMultipleChoiceField(
-        queryset=User.objects.filter(role="ALUMNO"),  # Solo alumnos
-        widget=forms.CheckboxSelectMultiple,          # Checkboxes
-        required=True,                                # Obligatorio
-        label="Miembros del grupo"                    # Etiqueta
+        queryset=User.objects.filter(role="student"),  # Solo alumnos (corregido)
+        widget=forms.CheckboxSelectMultiple,           # Checkboxes
+        required=True,                                 # Obligatorio
+        label="Miembros del grupo"                     # Etiqueta
     )
 
     class Meta:
@@ -38,6 +43,11 @@ class GroupTaskForm(forms.ModelForm):  # Formulario para tareas grupales
             "requires_teacher_validation", # Validación del profesor
             "due_date",                    # Fecha límite
         ]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control"}),
+            "due_date": forms.DateTimeInput(attrs={"type": "datetime-local", "class": "form-control"}),
+        }
 
     def save(self, commit=True):  # Guardado personalizado
         task = super().save(commit=False)
@@ -52,3 +62,6 @@ class TaskDeliveryForm(forms.ModelForm):  # Formulario para entregar archivo
     class Meta:
         model = Task
         fields = ["delivery_file"]  # Archivo de entrega
+        widgets = {
+            "delivery_file": forms.ClearableFileInput(attrs={"class": "form-control"}),
+        }

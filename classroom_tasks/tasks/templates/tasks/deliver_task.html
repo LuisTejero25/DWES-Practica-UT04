@@ -1,13 +1,50 @@
-{% extends "base.html" %}
+{% extends "tasks/base.html" %}
+{% load static %}
+
+{% block title %}Entregar tarea{% endblock %}
 
 {% block content %}
-<h2>Entregar tarea: {{ task.title }}</h2>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">📤 Entregar</button>
-</form>
+<div class="task-detail">
 
-<p><a href="{% url 'tasks:list_my_tasks' %}">Volver a mis tareas</a></p>
+    <h2 class="task-title">📤 Entregar tarea: {{ task.title }}</h2>  {# Título de la tarea #}
+
+    <div class="task-meta">
+        <p><strong>Tipo:</strong> {{ task.get_type_display }}</p>  {# Individual / Grupal #}
+
+        <p><strong>Estado actual:</strong>
+            {% if task.status == "PENDIENTE" %}🟡 Pendiente{% endif %}
+            {% if task.status == "ENTREGADA" %}🔵 Entregada{% endif %}
+            {% if task.status == "VALIDADA" %}🟢 Validada{% endif %}
+            {% if task.status == "COMPLETADA" %}🟢 Completada{% endif %}
+        </p>
+
+        <p><strong>Fecha límite:</strong> {{ task.due_date|date:"d/m/Y H:i" }}</p>
+
+        {% if task.requires_teacher_validation %}
+            <p><strong>Validación:</strong> Requiere validación del profesor</p>
+        {% else %}
+            <p><strong>Validación:</strong> El alumno puede marcarla como completada</p>
+        {% endif %}
+    </div>
+
+    <div class="task-description">
+        <h3>Descripción</h3>
+        <p>{{ task.description|default:"Sin descripción" }}</p>
+    </div>
+
+    <h3>Subir entrega</h3>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}  {# Campo para subir PDF #}
+        <button type="submit" class="btn btn-primary">📤 Entregar</button>
+    </form>
+
+    <br>
+
+    <a href="{% url 'tasks:list_my_tasks' %}" class="btn btn-secondary">⬅ Volver a mis tareas</a>
+
+</div>
 {% endblock %}

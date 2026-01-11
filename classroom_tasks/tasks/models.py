@@ -2,94 +2,102 @@ from django.db import models
 from django.conf import settings
 
 class Task(models.Model):
-    # Tipos de tareas disponibles.
+    # Tipos de tarea disponibles (individual, grupal y evaluable)
     TYPE_CHOICES = [
-        ('INDIVIDUAL', 'Individual'), # Tarea realizada por un único alumno.
-        ('GRUPAL', 'Grupal'), # Tarea realizada en grupo.
-        ('EVALUABLE', 'Evaluable'), #Tarea que cuenta para evaluación.
+        ('INDIVIDUAL', 'Individual'),   # Tarea realizada por un único alumno
+        ('GRUPAL', 'Grupal'),           # Tarea realizada por varios alumnos
+        ('EVALUABLE', 'Evaluable'),     # Tarea quee requiere validación del profesor
+                            
     ]
 
-    # Posibles estados de una tarea.
+    # Estados posibles de una tarea
     STATUS_CHOICES = [
-        ('PENDIENTE', 'Pendiente'), # Tarea creada pero aún no entregada.
-        ('ENTREGADA', 'Entregada'), # Tarea entregada por un alumno o un grupo.
-        ('VALIDADA', 'Validada'), # Tarea revisada y validada por el profesor.
+        ('PENDIENTE', 'Pendiente'),     # Tarea creada pero no entregada
+        ('ENTREGADA', 'Entregada'),     # Tarea entregada por alumno o grupo
+        ('VALIDADA', 'Validada'),       # Tarea validada por el profesor
+        ('COMPLETADA', 'Completada'),   # Tarea marcada como completada por el alumno
     ]
 
-    # Título de la tarea (obligatorio y maximo 120 caracteres).
-    title = models.CharField("Título", max_length=120)
+    title = models.CharField(
+        "Título",
+        max_length=120
+    )  # Título de la tarea
 
-    # Descripción opcional de la tarea.
-    description = models.TextField("Descripción", blank=True)
+    description = models.TextField(
+        "Descripción",
+        blank=True
+    )  # Descripción opcional
 
-    # Tipo de tarea, limitado a las opciones definidas en TYPE_CHOICES.
-    type = models.CharField("Tipo", max_length=20, choices=TYPE_CHOICES)
+    type = models.CharField(
+        "Tipo",
+        max_length=20,
+        choices=TYPE_CHOICES,
+        blank=True
+    )  # Tipo de tarea (se asigna en el formulario)
 
-    # Indica si la tarea requiere validación por parte de un profesor.
-    requires_teacher_validation = models.BooleanField("Requiere validación del profesor", 
-                                                      default=False)
+    requires_teacher_validation = models.BooleanField(
+        "Requiere validación del profesor",
+        default=False
+    )  # Indica si necesita validación del profesor
 
-    # Usuario creador de la tarea (normalmente un profesor).
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="Creador",
         on_delete=models.CASCADE,
         related_name='created_tasks'
-    ) 
+    )  # Usuario que crea la tarea
 
-    # Miembros asociados a la tarea (alumnos que participan).
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         verbose_name="Miembros",
         related_name='collaborating_tasks',
         blank=True
-    )
+    )  # Alumnos que participan en la tarea (solo en grupales)
 
-    # Fecha límite de entrega (opcional).
-    due_date= models.DateTimeField("Fecha límite", null=True, blank=True)
+    due_date = models.DateTimeField(
+        "Fecha límite",
+        null=True,
+        blank=True
+    )  # Fecha límite de entrega
 
-    # Fecha de la creación de la tarea (se asigna automáticamente).
-    created_at = models.DateTimeField("Fecha de creación", auto_now_add=True)
+    created_at = models.DateTimeField(
+        "Fecha de creación",
+        auto_now_add=True
+    )  # Fecha en la que se creó la tarea
 
-    # Estado actual de la tarea, limitado a STATUS_CHOICES. 
-    status = models.CharField("Estado",
-             max_length=20,
-             choices=STATUS_CHOICES,
-             default='PENDIENTE'
-        )
-    
-    # Profesor que valida la tarea (puede ser nulo si no se ha asignado).
+    status = models.CharField(
+        "Estado",
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='PENDIENTE'
+    )  # Estado actual de la tarea
+
     teacher_validator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="Profesor validador",
         on_delete=models.SET_NULL,
-        null=True, blank=True,
+        null=True,
+        blank=True,
         related_name='tasks_to_validate'
-    )
+    )  # Profesor que valida la tarea (si aplica)
 
-    # Campo para subir el PDF de la entrega
     delivery_file = models.FileField(
         "Archivo de entrega",
         upload_to="deliveries/",
         null=True,
         blank=True
-    )
-    
+    )  # Archivo PDF entregado por el alumno
 
-    # Representación en texto de la tarea (útil en el admin y en depuración).
+    delivery_date = models.DateTimeField(
+        "Fecha de entrega",
+        null=True,
+        blank=True
+    )  # Fecha en la que el alumno entrega la tarea
+
     def __str__(self):
-        return f'{self.title} ({self.type})'  
-        # Métodos auxiliares
-    def is_pending(self):
-        return self.status == 'PENDIENTE'
-
-    def is_delivered(self):
-        return self.status == 'ENTREGADA'
-
-    def is_validated(self):
-        return self.status == 'VALIDADA'
+        return f"{self.title} ({self.type})"  # Representación legible en admin
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-created_at']  # Ordenar por fecha de creación descendente
         verbose_name = "Tarea"
         verbose_name_plural = "Tareas"

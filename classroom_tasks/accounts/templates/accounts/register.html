@@ -1,0 +1,26 @@
+{% extends "base.html" %}  {# Usamos la plantilla base #}
+{% load static %}
+
+{% block title %}Registrar usuario{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div class="tasks-container">
+
+    <h2 class="section-title">🧑‍🏫 Registrar nuevo usuario</h2>
+
+    <form method="post">  {# Formulario de registro #}
+        {% csrf_token %}  {# Token de seguridad #}
+        {{ form.as_p }}   {# Renderizamos el formulario #}
+
+        <button type="submit" class="btn btn-success">➕ Crear usuario</button>  {# Botón de envío #}
+    </form>
+
+    <br>
+
+    <a href="{% url 'tasks:list_my_tasks' %}" class="btn btn-secondary">⬅ Volver</a>  
+    {# Volver al listado principal de tareas #}
+
+</div>
+{% endblock %}

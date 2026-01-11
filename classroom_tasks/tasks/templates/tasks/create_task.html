@@ -1,9 +1,52 @@
-{% extends "base.html" %}
+{% extends "tasks/base.html" %}
+{% load static %}
+
+{% block title %}Crear tarea{% endblock %}
+
 {% block content %}
-<h1>Crear nueva tarea</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar</button>
-</form>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div class="task-form-container">
+
+    <h2 class="section-title"> Crear nueva tarea</h2>
+
+    <!-- Selector de tipo de tarea -->
+    <form method="get" class="task-type-selector">
+
+        <button name="type" value="individual"
+                class="btn {% if task_type == 'individual' %}btn-primary{% endif %}">
+            Tarea individual
+        </button>
+
+        <button name="type" value="group"
+                class="btn {% if task_type == 'group' %}btn-primary{% endif %}">
+            Tarea grupal
+        </button>
+
+        <button name="type" value="evaluable"
+                class="btn {% if task_type == 'evaluable' %}btn-primary{% endif %}">
+            Tarea evaluable
+        </button>
+
+    </form>
+
+    <br>
+
+    <!-- Formulario principal de creación de tarea -->
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Campo oculto para mantener el tipo seleccionado -->
+        <input type="hidden" name="type" value="{{ task_type }}">
+
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-success"> Guardar tarea</button>
+    </form>
+
+    <br>
+    <a href="{% url 'tasks:list_my_tasks' %}" class="btn btn-secondary">⬅ Volver</a>
+
+</div>
 {% endblock %}
+
