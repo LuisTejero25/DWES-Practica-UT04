@@ -78,6 +78,10 @@ Se han generado y aplicado todas las migraciones necesarias. El proyecto incluye
 - `.gitignore` configurado correctamente 
 --- 
 
+
+## Diagrama ER
+![Diagrama ER](docs/diagrama_er.png)
+
 ##  Estructura del proyecto
 ```
 classroom_tasks/
