@@ -79,6 +79,7 @@ Se han generado y aplicado todas las migraciones necesarias. El proyecto incluye
 --- 
 
 ##  Estructura del proyecto
+```
 classroom_tasks/
 ├── accounts/
 │   ├── admin.py
@@ -124,7 +125,7 @@ classroom_tasks/
 │
 ├── manage.py
 ├── requirements.txt
-
+```
 
 ## Instalación y ejecución
 
