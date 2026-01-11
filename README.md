@@ -80,7 +80,8 @@ Se han generado y aplicado todas las migraciones necesarias. El proyecto incluye
 
 
 ## Diagrama ER
-![Diagrama ER](docs/diagrama_er.png)
+![Diagrama ER](classroom_tasks/docs/diagrama_er.png)
+
 
 ##  Estructura del proyecto
 ```
