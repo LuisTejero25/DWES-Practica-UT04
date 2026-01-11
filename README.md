@@ -81,11 +81,50 @@ Se han generado y aplicado todas las migraciones necesarias. El proyecto incluye
 ##  Estructura del proyecto
 classroom_tasks/
 ├── accounts/
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── urls.py
+│   ├── views.py
+│   └── templates/
+│       └── accounts/
+│           ├── list_users.html
+│           ├── profile.html
+│           └── register.html
+│
 ├── tasks/
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── urls.py
+│   ├── views.py
+│   └── templates/
+│       └── tasks/
+│           ├── base.html
+│           ├── create_task.html
+│           ├── deliver_task.html
+│           ├── list_my_tasks.html
+│           ├── task_detail.html
+│           └── tasks_to_validate.html
+│
 ├── classroom_tasks/
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+│
 ├── templates/
+│   ├── base.html
+│   └── registration/
+│       └── login.html
+│
+├── deliveries/
+│
 ├── manage.py
 ├── requirements.txt
+
 
 ## Instalación y ejecución
 
