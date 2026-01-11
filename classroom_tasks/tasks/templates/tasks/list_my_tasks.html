@@ -8,17 +8,16 @@
 
 <div class="tasks-container">
 
-    <a href="{% url 'tasks:create_task' %}" class="btn btn-success">➕ Crear tarea</a>  {# Todos pueden crear tareas #}
+    <a href="{% url 'tasks:create_task' %}" class="btn btn-success"> Crear tarea</a>  {# Todos pueden crear tareas #}
     <br><br>
 
     {% if user.role == "teacher" or user.is_superuser %}  {# Solo profesor o admin #}
-        <a href="{% url 'tasks:tasks_to_validate' %}" class="btn btn-primary">📝 Tareas a validar</a>  {# Validación de tareas #}
+        <a href="{% url 'tasks:tasks_to_validate' %}" class="btn btn-primary"> Tareas a validar</a>  {# Validación de tareas #}
         <br><br>
     {% endif %}
 
-    <!--  SECCIÓN 1: TAREAS CREADAS POR EL USUARIO                 -->
-    <!--  Aquí se muestran las tareas donde el usuario es creador  -->
-    <h2 class="section-title">📘 Tareas creadas por mí</h2>
+    <!--  TAREAS CREADAS POR EL USUARIO -->
+    <h2 class="section-title"> Tareas creadas por mí</h2>
 
     <table class="task-table">
         <thead>
@@ -42,9 +41,9 @@
 
                 <!-- Estado representado con iconos -->
                 <td>
-                    {% if task.is_pending %}🟡 Pendiente{% endif %}
-                    {% if task.is_delivered %}🔵 Entregada{% endif %}
-                    {% if task.is_validated %}✅ Validada{% endif %}
+                    {% if task.is_pending %} Pendiente{% endif %}
+                    {% if task.is_delivered %} Entregada{% endif %}
+                    {% if task.is_validated %} Validada{% endif %}
                 </td>
 
                 <!-- Fecha límite formateada -->
@@ -65,10 +64,9 @@
 
 
 
-    <!-- SECCIÓN 2: TAREAS EN LAS QUE EL USUARIO COLABORA -->        
-    <!-- Aquí se muestran tareas GRUPALES donde el usuario es miembro -->
+    <!-- TAREAS EN LAS QUE EL USUARIO COLABORA -->        
     
-    <h2 class="section-title">👥 Tareas en las que colaboro</h2>
+    <h2 class="section-title"> Tareas en las que colaboro</h2>
 
     <table class="task-table">
         <thead>
